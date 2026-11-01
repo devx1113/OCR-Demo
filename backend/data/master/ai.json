@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "model": "gpt-5.4-mini",
+  "review_model": "gpt-5.5"
+}

@@ -1,0 +1,57 @@
+{
+  "cover": {
+    "sheet": "御見積書",
+    "cells": {
+      "customer": "B4",
+      "quote_no": "H4",
+      "date": "H5",
+      "owner": "H6",
+      "subject": "C11",
+      "delivery": "C12",
+      "delivery_place": "C13",
+      "validity": "C14",
+      "draft_mark": "H1",
+      "approver": "H17",
+      "creator": "I17"
+    }
+  },
+  "lines": {
+    "sheet": "御見積書",
+    "start_row": 20,
+    "max_rows": 10,
+    "cols": {
+      "no": "B",
+      "name": "C",
+      "qty": "F",
+      "unit": "G",
+      "price": "H"
+    }
+  },
+  "totals": {
+    "sheet": "御見積書",
+    "subtotal": "I30",
+    "tax": "I31",
+    "total": "I32"
+  },
+  "conditions": {
+    "sheet": "御見積書",
+    "start_row": 35,
+    "max_rows": 10,
+    "col": "B"
+  },
+  "equipment": {
+    "sheet": "主要機器構成",
+    "subject": "A2",
+    "start_row": 5,
+    "max_rows": 40,
+    "cols": {
+      "no": "A",
+      "name": "B",
+      "model": "C",
+      "spec": "D",
+      "qty": "E",
+      "mount": "F",
+      "note": "G"
+    }
+  }
+}

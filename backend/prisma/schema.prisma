@@ -1,0 +1,173 @@
+// 盤見積アシスタントのデータベース定義（Prisma）
+// - 案件・資料・履歴・見積の版・担当者・マスタを PostgreSQL に保存する
+// - 取り込んだ資料ファイル・出力した Excel はファイル（Docker ボリューム）に置き、ここではメタデータだけを持つ
+// - 解析結果（analysis）は再計算できる派生データのため JSON 列にまとめて保持する
+//
+// 変更したら：prisma migrate dev --name <内容>（開発） → prisma migrate deploy（本番・コンテナ起動時に自動）
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// 見積案件
+model Project {
+  id                 String    @id @db.VarChar(12)
+  quoteNo            String    @unique @map("quote_no") @db.VarChar(20)
+  name               String
+  customer           String    @default("")
+  owner              String    @default("")
+  dueDate            String?   @map("due_date") @db.VarChar(10)
+  /// 楽観的排他制御の更新番号（保存のたびに +1。古い番号からの保存は拒否する）
+  rev                Int       @default(0)
+  modifiedBy         String    @default("") @map("modified_by")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @default(now()) @map("updated_at")
+  settings           Json      @default("{}")
+  fieldOverrides     Json      @default("{}") @map("field_overrides")
+  componentOverrides Json      @default("{}") @map("component_overrides")
+  extraComponents    Json      @default("[]") @map("extra_components")
+  customQuestions    Json      @default("[]") @map("custom_questions")
+  chat               Json      @default("[]")
+  approval           Json?
+  aiReview           Json?     @map("ai_review")
+  /// 解析結果（抽出値・構成機器・収容判定・見積・要確認・質疑）。資料と修正内容から再計算できる
+  analysis           Json?
+  analysisStale      Boolean   @default(false) @map("analysis_stale")
+  exportedAt         String?   @map("exported_at")
+  /// 上記以外の項目（将来の項目追加で移行を不要にするため）
+  extra              Json      @default("{}")
+
+  documents Document[]
+  history   HistoryEntry[]
+  revisions Revision[]
+
+  @@index([updatedAt])
+  @@map("projects")
+}
+
+/// 取り込んだ資料（ファイル本体はボリューム上に保存）
+model Document {
+  id           String    @id @db.VarChar(12)
+  projectId    String    @map("project_id") @db.VarChar(12)
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  position     Int       @default(0)
+  filename     String
+  ext          String    @db.VarChar(10)
+  size         Int
+  sha256       String    @db.VarChar(64)
+  kind         String    @db.VarChar(10)
+  pages        Int?
+  textLayer    Boolean   @default(true) @map("text_layer")
+  status       String    @db.VarChar(10)
+  messages     Json      @default("[]")
+  role         String    @db.VarChar(12)
+  receivedDate String?   @map("received_date") @db.VarChar(10)
+  version      String?
+  title        String?
+  docNo        String?   @map("doc_no")
+  include      Boolean   @default(true)
+  uploadedAt   String    @map("uploaded_at")
+  uploadedBy   String    @map("uploaded_by")
+  blocks       Int?
+  tables       Int?
+  extra        Json      @default("{}")
+
+  @@unique([projectId, sha256])
+  @@index([projectId])
+  @@map("documents")
+}
+
+/// 資料の構造化結果（文字・表・座標）。資料の登録処理中（資料の行より先）に保存されるため外部キーは張らず、資料の削除時に一緒に消す
+model ParsedDocument {
+  documentId String @id @map("document_id") @db.VarChar(12)
+  projectId  String @map("project_id") @db.VarChar(12)
+  data       Json
+
+  @@index([projectId])
+
+  @@map("parsed_documents")
+}
+
+/// AI 読解・AI-OCR の結果（資料のハッシュ・モデル・プロンプト版のキャッシュキー付き）
+model AiResult {
+  documentId String   @id @map("document_id") @db.VarChar(12)
+  projectId  String   @map("project_id") @db.VarChar(12)
+  kind       String   @default("extract") @db.VarChar(10)
+  cacheKey   String   @map("cache_key") @db.VarChar(32)
+  model      String
+  data       Json
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([projectId])
+  @@map("ai_results")
+}
+
+/// 操作・変更履歴（監査用。追記のみ）
+model HistoryEntry {
+  id        Int     @id @default(autoincrement())
+  projectId String  @map("project_id") @db.VarChar(12)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  at        String
+  user      String
+  action    String
+  detail    String  @default("")
+
+  @@index([projectId, id])
+  @@map("history")
+}
+
+/// 承認された見積の版（承認時点の金額・明細・仕様のスナップショット）
+model Revision {
+  id         Int     @id @default(autoincrement())
+  projectId  String  @map("project_id") @db.VarChar(12)
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rev        Int
+  at         String
+  approvedBy String  @map("approved_by")
+  saleTotal  Int     @map("sale_total")
+  data       Json
+
+  @@unique([projectId, rev])
+  @@map("revisions")
+}
+
+/// 担当者と権限
+model User {
+  name  String   @id
+  role  String
+  perms String[]
+  sort  Int      @default(0)
+
+  @@map("users")
+}
+
+/// マスタ（部品・筐体・判定ルール・変換辞書・AI 設定）
+model MasterData {
+  name      String   @id @db.VarChar(40)
+  data      Json
+  updatedAt DateTime @default(now()) @map("updated_at")
+  updatedBy String   @default("") @map("updated_by")
+
+  @@map("master_data")
+}
+
+/// マスタ・ルールの版（保存のたびに内容を残し、変更の経緯の確認と以前の版への戻しに使う）
+model MasterVersion {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(40)
+  version   Int
+  data      Json
+  summary   String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String   @default("") @map("created_by")
+
+  @@unique([name, version])
+  @@map("master_versions")
+}

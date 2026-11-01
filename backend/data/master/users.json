@@ -1,0 +1,8 @@
+{
+ "_note": "担当者と権限。edit=資料・抽出値・見積の編集、request=承認依頼、approve=承認・差戻し、export=見積書の出力（draft=承認前の注意書き付き出力）、master=マスタ・設定の変更",
+ "users": [
+  {"name": "山田 太郎", "role": "設計担当", "perms": ["edit", "request", "export", "draft"]},
+  {"name": "佐藤 花子", "role": "設計課長", "perms": ["edit", "request", "approve", "export", "draft", "master"]},
+  {"name": "鈴木 一郎", "role": "営業担当", "perms": ["export"]}
+ ]
+}

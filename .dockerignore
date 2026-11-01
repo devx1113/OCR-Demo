@@ -1,0 +1,14 @@
+# 秘密情報・ローカルのデータはイメージに入れない
+.env
+.env.*
+!.env.example
+.venv
+**/__pycache__
+**/*.pyc
+.git
+backend/data/projects
+frontend/node_modules
+frontend/dist
+tests
+docs
+*.log

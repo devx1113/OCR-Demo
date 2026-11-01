@@ -1,0 +1,78 @@
+{
+  "fields": [
+    {"key": "subject", "label": "件名", "group": "project", "type": "text", "required": true, "aliases": ["件名", "工事名", "工事件名", "案件名"]},
+    {"key": "customer", "label": "発注者", "group": "project", "type": "text", "required": true, "aliases": ["発注者", "顧客", "宛先", "注文者"]},
+    {"key": "panel_name", "label": "盤名称", "group": "panel", "type": "text", "required": true, "aliases": ["盤名称", "盤名", "名称"]},
+    {"key": "panel_no", "label": "盤番号", "group": "panel", "type": "text", "required": false, "aliases": ["盤番号", "盤記号", "盤No", "盤NO"]},
+    {"key": "quantity", "label": "数量", "group": "panel", "type": "qty", "required": true, "aliases": ["数量", "面数"]},
+    {"key": "panel_type", "label": "形式", "group": "panel", "type": "text", "required": true, "aliases": ["形式", "盤形式", "構造", "盤構造"]},
+    {"key": "location", "label": "設置場所", "group": "panel", "type": "enum", "options": ["屋内", "屋外"], "required": true, "aliases": ["設置場所", "設置環境", "設置条件"]},
+    {"key": "outer_dims", "label": "外形寸法", "group": "panel", "type": "dims", "required": true, "aliases": ["外形寸法", "盤寸法", "外形", "寸法"]},
+    {"key": "width_limit", "label": "設置スペース制限（幅）", "group": "panel", "type": "length", "required": false, "aliases": ["設置スペース制限", "設置スペース", "幅制限", "設置寸法制限"]},
+    {"key": "plate_dims", "label": "盤内有効寸法", "group": "panel", "type": "dims", "required": true, "aliases": ["盤内有効寸法", "取付板寸法", "取付板有効寸法", "有効寸法"]},
+    {"key": "main_power", "label": "主回路電源", "group": "panel", "type": "power", "required": true, "aliases": ["主回路電源", "主電源", "受電電源", "電源"]},
+    {"key": "control_power", "label": "制御電源", "group": "panel", "type": "text", "required": true, "aliases": ["制御電源", "操作電源"]},
+    {"key": "protection", "label": "保護等級", "group": "panel", "type": "text", "required": true, "aliases": ["保護等級", "保護構造", "保護形式", "IP等級"]},
+    {"key": "paint", "label": "塗装色", "group": "panel", "type": "text", "required": true, "aliases": ["塗装色", "塗色", "塗装"]},
+    {"key": "ambient", "label": "周囲温度", "group": "panel", "type": "temp", "required": true, "aliases": ["周囲温度", "使用周囲温度", "周囲温度範囲"]},
+    {"key": "standard", "label": "準拠規格", "group": "panel", "type": "text", "required": false, "aliases": ["準拠規格", "適用規格", "規格"]},
+    {"key": "reserve_space", "label": "予備スペース", "group": "panel", "type": "percent", "required": false, "aliases": ["予備スペース"]},
+    {"key": "scope", "label": "見積範囲", "group": "conditions", "type": "list", "required": true, "aliases": ["見積範囲", "見積対象", "範囲"]},
+    {"key": "exclusions", "label": "除外事項", "group": "conditions", "type": "list", "required": false, "aliases": ["除外事項", "除外", "別途工事", "見積範囲外"]},
+    {"key": "delivery", "label": "納期", "group": "conditions", "type": "text", "required": true, "aliases": ["納期", "納入期限"]},
+    {"key": "delivery_place", "label": "受渡場所", "group": "conditions", "type": "text", "required": true, "aliases": ["受渡場所", "納入場所", "受渡条件"]},
+    {"key": "tests", "label": "工場試験", "group": "conditions", "type": "list", "required": false, "aliases": ["工場試験", "試験項目"]},
+    {"key": "witness", "label": "立会検査", "group": "conditions", "type": "text", "required": false, "aliases": ["立会検査", "立会"]},
+    {"key": "documents", "label": "提出図書", "group": "conditions", "type": "list", "required": false, "aliases": ["提出図書", "図書"]},
+    {"key": "spares", "label": "予備品", "group": "conditions", "type": "list", "required": false, "aliases": ["予備品"]},
+    {"key": "validity", "label": "見積有効期限", "group": "conditions", "type": "text", "required": false, "aliases": ["見積有効期限", "有効期限"]},
+    {"key": "quote_due", "label": "見積提出期限", "group": "conditions", "type": "date", "required": false, "aliases": ["見積提出期限", "提出期限"]}
+  ],
+  "meta_fields": [
+    {"key": "doc_no", "aliases": ["文書番号", "図書番号", "資料番号"]},
+    {"key": "version", "aliases": ["版", "版数", "改訂", "Rev"]},
+    {"key": "issue_date", "aliases": ["発行日", "作成日", "発行年月日", "日付"]}
+  ],
+  "component_headers": {
+    "no": ["No", "No.", "番号", "項番", "NO"],
+    "name": ["品名", "機器名", "機器名称", "名称", "品目"],
+    "model": ["型式", "型番", "品番", "形式"],
+    "spec": ["仕様", "定格", "規格"],
+    "qty": ["数量", "員数", "個数"],
+    "mount": ["取付位置", "取付場所", "取付"]
+  },
+  "component_names": {
+    "配線用遮断器": ["MCCB", "NFB", "ノーヒューズブレーカ", "ノーヒューズブレーカー", "配線用しゃ断器", "ブレーカ"],
+    "漏電遮断器": ["ELCB", "ELB", "漏電ブレーカ", "漏電ブレーカー", "漏電しゃ断器"],
+    "インバータ": ["INV", "インバーター", "VFD"],
+    "電磁接触器": ["MC", "マグネットコンタクタ", "電磁開閉器"],
+    "サーマルリレー": ["THR", "熱動形過負荷継電器", "熱動継電器"],
+    "直流電源": ["スイッチング電源", "DC電源", "安定化電源"],
+    "制御用変圧器": ["制御トランス", "変圧器", "トランス"],
+    "補助リレー": ["リレー", "制御リレー"],
+    "端子台": ["ターミナル", "TB"],
+    "表示灯": ["パイロットランプ", "PL", "LED表示灯"],
+    "押しボタンスイッチ": ["押釦スイッチ", "PB", "押ボタンスイッチ"],
+    "切替スイッチ": ["セレクタスイッチ", "SS", "切換スイッチ"],
+    "電流計": ["AM", "アンメータ"],
+    "タッチパネル": ["HMI", "表示器", "プログラマブル表示器"],
+    "サージ防護デバイス": ["SPD", "避雷器", "サージアブソーバ"],
+    "盤内照明": ["盤内灯", "LED照明"],
+    "コンセント": ["サービスコンセント"]
+  },
+  "mount_words": {
+    "plate": ["取付板", "盤内", "内部"],
+    "door": ["扉面", "扉", "前面"]
+  },
+  "risk_keywords": [
+    {"pattern": "立会", "label": "立会検査あり", "impact": "試験工数・日程調整が必要"},
+    {"pattern": "焼付塗装", "label": "焼付塗装の指定", "impact": "筐体単価に影響"},
+    {"pattern": "換気ファン|放熱|温度上昇", "label": "放熱対策の要求", "impact": "換気ファン等の追加可能性"},
+    {"pattern": "予備スペース|増設", "label": "将来増設スペースの要求", "impact": "盤サイズの判定条件に影響"},
+    {"pattern": "予備品", "label": "予備品の納入", "impact": "材料費に計上が必要"},
+    {"pattern": "完成図書|承認図|提出図書", "label": "図書提出", "impact": "図書作成工数に計上が必要"},
+    {"pattern": "銘板", "label": "銘板仕様の指定", "impact": "材料費に影響"},
+    {"pattern": "ペナルティ|違約金|遅延損害", "label": "納期ペナルティ条項", "impact": "契約リスク"},
+    {"pattern": "保証期間|瑕疵", "label": "保証条件の指定", "impact": "契約リスク"}
+  ]
+}

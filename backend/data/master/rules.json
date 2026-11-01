@@ -1,0 +1,51 @@
+{
+  "layout": {
+    "side_duct_w": 40,
+    "row_duct_h": 60,
+    "h_gap": 10,
+    "max_occupancy": 0.85,
+    "depth_clearance": 30,
+    "door_margin": 60,
+    "door_gap": 20
+  },
+  "thermal": {
+    "k": 5.5,
+    "max_internal_temp": 50,
+    "default_ambient": 40,
+    "airflow_factor": 3.1
+  },
+  "labor": {
+    "rate": 6500,
+    "design_base_h": 8,
+    "design_per_type_h": 0.5,
+    "assembly_base_h": 16,
+    "assembly_per_unit_h": 0.4,
+    "test_base_h": 8,
+    "witness_h": 8,
+    "docs_h_per_kind": 4
+  },
+  "cost": {
+    "overhead_rate": 0.08,
+    "transport": 85000,
+    "default_margin": 0.22,
+    "round_unit": 10000,
+    "tax_rate": 0.1,
+    "duct_price_per_m": 1200,
+    "din_price_per_m": 650,
+    "wire_per_unit": 450,
+    "nameplate": 900
+  },
+  "conflict_policy": "newer",
+  "market": {
+    "steel_index_base": 100,
+    "steel_index": 100,
+    "steel_share": 0.45,
+    "usd_jpy_base": 150,
+    "usd_jpy": 150,
+    "import_share": 0.6
+  },
+  "effect": {
+    "baseline_hours": 6.0,
+    "idle_minutes": 20
+  }
+}
