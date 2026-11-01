@@ -39,7 +39,10 @@ export default function App() {
   const [project, setProject] = useState<Project | null>(null)
   const [ai, setAi] = useState<AiStatus>(OFF)
 
-  const refreshAi = useCallback(() => { api.health().then((h) => setAi(h.ai)).catch(() => setAi(OFF)) }, [])
+  const [ephemeral, setEphemeral] = useState(false)
+  const refreshAi = useCallback(() => {
+    api.health().then((h) => { setAi(h.ai); setEphemeral(!!h.ephemeral) }).catch(() => setAi(OFF))
+  }, [])
   useEffect(() => { refreshAi() }, [refreshAi])
   const [aiFault, setAiFault] = useState(false)
   useEffect(() => {
@@ -65,6 +68,11 @@ export default function App() {
           <div className="app">
             <Sidebar route={route} project={project} ai={ai} aiFault={aiFault} user={user} onUser={setUser} />
             <main className="main">
+              {ephemeral && (
+                <div className="demo-env" role="note" data-testid="demo-env">
+                  公開デモ環境です。登録した案件・マスタの変更は一定時間で消えることがあります（「デモ案件で体験する」はいつでも使えます）
+                </div>
+              )}
               <motion.div key={pageKey} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
                 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                 {route.page === 'dashboard' && <Dashboard />}

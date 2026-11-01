@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import ai, exports, impact, learning, parsing, report, revisions, similar, storage
 from .analysis import analyze
-from .config import ALLOWED_EXT, CELLMAP, FRONTEND_DIST, MAX_UPLOAD_MB, SAMPLES
+from .config import ALLOWED_EXT, CELLMAP, FRONTEND_DIST, MAX_UPLOAD_MB, SAMPLES, SERVERLESS
 
 @asynccontextmanager
 async def _lifespan(_app):
@@ -221,7 +221,8 @@ def _summary(p: dict) -> dict:
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "pdf_preview": exports.soffice_available(), "ai": ai.status(), "storage": storage.BACKEND}
+    return {"ok": True, "pdf_preview": exports.soffice_available(), "ai": ai.status(), "storage": storage.BACKEND,
+            "ephemeral": SERVERLESS and storage.BACKEND == "files", "max_upload_mb": MAX_UPLOAD_MB}
 
 
 @app.get("/api/projects")

@@ -84,8 +84,11 @@ async function request<T>(method: string, url: string, body?: unknown, isForm = 
 
 const P = (id: string) => `/api/projects/${id}`
 
+export type Health = { ok: boolean; pdf_preview: boolean; ai: AiStatus; storage: string; ephemeral?: boolean; max_upload_mb?: number }
+let uploadLimitMb = 50
+
 export const api = {
-  health: () => request<{ ok: boolean; pdf_preview: boolean; ai: AiStatus }>('GET', '/api/health'),
+  health: () => request<Health>('GET', '/api/health').then((h) => { if (h.max_upload_mb) uploadLimitMb = h.max_upload_mb; return h }),
   projects: () => request<ProjectSummary[]>('GET', '/api/projects'),
   createProject: (b: { name: string; customer?: string; due_date?: string }) => request<Project>('POST', '/api/projects', b),
   createDemo: () => request<Project>('POST', '/api/projects/demo?analyze=false'),
@@ -94,6 +97,10 @@ export const api = {
   updateProject: (id: string, b: Partial<Project>) => request<Project>('PATCH', P(id), b),
   deleteProject: (id: string) => request<{ ok: boolean }>('DELETE', P(id)),
   upload: (id: string, file: File) => {
+    // 公開デモ（Vercel）は要求本文の上限で 413 が返り、サーバーの説明が届かないため、送る前に確かめる
+    if (file.size > uploadLimitMb * 1024 * 1024) {
+      return Promise.reject(new ApiError(413, `${file.name} はファイルサイズの上限（${uploadLimitMb}MB）を超えています`, null))
+    }
     const fd = new FormData()
     fd.append('file', file)
     return request<Project>('POST', `${P(id)}/documents`, fd, true)

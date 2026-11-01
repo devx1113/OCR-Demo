@@ -1,0 +1,13 @@
+# Vercel に送らないもの（関数の容量を抑え、秘密情報・ローカルのデータを含めない）
+.env
+.env.*
+!.env.example
+.venv
+**/__pycache__
+**/*.pyc
+*.log
+backend/data/projects
+frontend/node_modules
+tests
+docs
+docker

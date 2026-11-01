@@ -73,6 +73,27 @@ docker compose run --rm -v "$PWD/backend/data/projects:/import:ro" backend pytho
 
 ---
 
+## Vercel で公開（デモ用）
+
+GitHub のリポジトリを Vercel に取り込むと、そのまま公開できます（設定は `pyproject.toml` の `[tool.vercel]`・`vercel.json`・`.vercelignore`）。
+API は FastAPI のサーバーレス関数（`backend.app.main:app`）として動き、画面はビルド時に `frontend` を作成して同じ関数から配信します。
+
+1. Vercel → Settings → Environment Variables に `OPENAI_API_KEY` を設定（リポジトリには入れない）。`DATABASE_URL` は設定しない
+2. Settings → Deployment Protection で、URL を知っている人だけが開けるようにする（公開のままだと誰でも OpenAI の利用料を使える）
+3. 再デプロイ
+
+Vercel で動かす場合の制限（公開デモ用の簡易構成）：
+
+| 項目 | 内容 |
+|---|---|
+| データ | 書き込めるのは `/tmp` だけのため、案件・マスタの変更はインスタンスの入れ替えで消えます。画面上部に注意を表示します。「デモ案件で体験する」はいつでも使えます |
+| 資料の容量 | 1 ファイル 4MB まで（Vercel の要求サイズの上限。画面で送る前に確認します） |
+| PDF プレビュー | LibreOffice がないため表示しません（Excel の出力は可） |
+
+データを残す必要がある場合は、Docker 構成（PostgreSQL）を Render・Railway などのコンテナ実行環境で動かしてください。
+
+---
+
 ## デモの流れ（約18分）
 
 1. **「デモ案件で体験する」**：架空の主仕様書（PDF）・変更連絡書（Word）・スキャン図面を登録し、AI が資料を読み解く演出とともに解析（約15秒）。スキャン図面は AI-OCR で寸法注記を読み、変更連絡前の旧版図面（奥行 D600）であることを検出
